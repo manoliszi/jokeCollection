@@ -1,6 +1,5 @@
 // Utilities
 import { defineStore } from 'pinia'
-import { faker } from '@faker-js/faker';
 import axios from 'axios'
 
 const api = axios.create({
@@ -8,30 +7,31 @@ const api = axios.create({
   headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
 });
 
-function createFakeUser(customData = {}) {
-  return {
-    id: customData.id || faker.string.uuid(),
-    name: customData.name || faker.person.fullName(),
-    email: customData.email || faker.internet.email(),
-    phone: customData.phone || faker.phone.number(),
-    address: customData.address || faker.location.streetAddress(),
-    avatar: customData.avatar || faker.image.avatar(),
-    createdAt: customData.createdAt || new Date().toISOString()
-  };
-}
-
 export const useMainStore = defineStore('main', {
   state: () => {
     return {
-      user: createFakeUser()
+      jokeArray: [],
+      loadingIndication: false,
     }
   },
   actions: {
-    updateUserData(customData) {
-      this.user = createFakeUser(customData);
+    async fetchJokes(type = '') {
+      this.loadingIndication = true;
+      try {
+        if (type !== '') {
+          type = '/' + type
+        }
+        const response = await axios.get(`https://official-joke-api.appspot.com/jokes${type}/ten`);
+        this.jokeArray = response.data;
+      } catch (error) {
+        console.error("Error fetching jokes:", error);
+      } finally {
+        this.loadingIndication = false;
+      }
     }
   },
   getters: {
-    getUser(state) {return state.user}
+    jokes: (state) => state.jokeArray,
+    loading: (state) => state.loadingIndication,
   }
 })

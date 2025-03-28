@@ -13,16 +13,14 @@
           color="primary"
           link
         >
-          <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item-content>
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
     <v-app-bar app color="secondary">
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>My Application</v-toolbar-title>
+      <v-toolbar-title>My Jokes Application</v-toolbar-title>
     </v-app-bar>
 </template>
 
@@ -33,7 +31,6 @@ const drawer = ref(false);
 
 const menuItems = [
   { title: "Home", route: "/", icon: "mdi-home" },
-  { title: "About", route: "/about", icon: "mdi-information" },
-  { title: "Contact", route: "/contact", icon: "mdi-email" }
+  { title: "Profile", route: "/profile", icon: "mdi-account" }
 ];
 </script>
