@@ -10,6 +10,7 @@
     @click.stop.prevent="btnClick"
   >
     <slot>
+      <v-icon v-if="hasIcon" size="x-large">{{ icon }}</v-icon>
       <span>
         {{ label }}
       </span>
@@ -18,6 +19,7 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 
 const props = defineProps({
   id: { type: String, default: 'button' },
@@ -26,9 +28,12 @@ const props = defineProps({
   loading: { type: Boolean, default: false },
   disabled: { type: Boolean, default: false },
   density: { type: String, default: 'default' },
-  variant: { type: String, default: 'plain' }
+  variant: { type: String, default: 'plain' },
+  icon: { type: String, default: '' }
 });
 const emit = defineEmits(['click']);
+
+const hasIcon = computed(() => {return props.icon !== ''})
 
 function btnClick(e) {
   emit('click', e);
