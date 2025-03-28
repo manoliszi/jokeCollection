@@ -1,7 +1,7 @@
 <template>
     <v-navigation-drawer v-model="drawer" app>
       <v-list>
-        <v-list-item title="My App"></v-list-item>
+        <v-list-item title="My Jokes Application"></v-list-item>
 
         <v-divider></v-divider>
 
