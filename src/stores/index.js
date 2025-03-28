@@ -2,16 +2,12 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
-const api = axios.create({
-  baseURL: 'http://localhost', timeout: 60000,
-  headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-});
-
 export const useMainStore = defineStore('main', {
   state: () => {
     return {
       jokeArray: [],
       loadingIndication: false,
+      favoriteJokesArray: []
     }
   },
   actions: {
@@ -23,15 +19,26 @@ export const useMainStore = defineStore('main', {
         }
         const response = await axios.get(`https://official-joke-api.appspot.com/jokes${type}/ten`);
         this.jokeArray = response.data;
+        return {ok: true}
       } catch (error) {
         console.error("Error fetching jokes:", error);
+        return {ok: false}
       } finally {
         this.loadingIndication = false;
       }
+    },
+    addFavorite(jokeId) {
+      if (!this.favoriteJokesArray.includes(jokeId)) {
+        this.favoriteJokesArray.push(jokeId);
+      }
+    },
+    removeFavorite(jokeId) {
+      this.favoriteJokesArray = this.favoriteJokesArray.filter(id => id !== jokeId);
     }
   },
   getters: {
     jokes: (state) => state.jokeArray,
     loading: (state) => state.loadingIndication,
+    favoriteJokes: (state) => state.favoriteJokesArray
   }
 })

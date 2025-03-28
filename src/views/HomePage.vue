@@ -1,17 +1,28 @@
 <template>
   <v-container>
+    <v-snackbar
+      v-model="snackbar"
+      :color="'error'"
+      :timeout="3000"
+      density="compact"
+    >
+      <p style="margin-bottom: 0 !important;">
+        {{ snackbarMessage }}
+      </p>
+    </v-snackbar>
+
     <v-card-title class="text-h5 mb-4 d-flex align-center">
       Jokes List
       <v-spacer />
       <v-switch v-model="jokeType" color="primary" label="Programming" hide-details />
       <v-divider vertical class="ma-4" />
-      <app-button color="primary" :disabled="loading" label="Find other jokes" variant="outlined" @click="store.fetchJokes(jokeType ? 'programming' : '')" />
+      <app-button color="primary" :disabled="loading" label="Find other jokes" variant="outlined" @click="fetchOtherJokes" />
     </v-card-title>
 
     <v-progress-linear v-if="loading" indeterminate color="primary" class="mb-4"></v-progress-linear>
 
     <v-row>
-      <v-col v-for="(joke, index) in jokes" :key="joke.id" cols="12" md="6">
+      <v-col v-if="jokes.length !== 0" v-for="(joke, index) in jokes" :key="joke.id" cols="12" md="6">
         <v-card
           :color="flippedCards[index] ? 'secondary200' : 'primary200'"
           class="flip-card"
@@ -26,8 +37,18 @@
             <div class="flip-card-back d-flex align-center justify-center pa-4">
               <h3 class="text-center">{{ joke.punchline }}</h3>
             </div>
+
+            <app-button
+              :icon="isFavorite(joke.id) ? 'mdi-star' : 'mdi-star-outline'"
+              :color="isFavorite(joke.id) ? 'yellow' : 'grey'"
+              @click="toggleFavorite(joke.id)" />
           </div>
         </v-card>
+      </v-col>
+      <v-col v-else-if="jokes.length === 0 && !loading">
+        <v-card-text class="text-h4 text-center">
+          Oops! No jokes to display
+        </v-card-text>
       </v-col>
     </v-row>
   </v-container>
@@ -45,15 +66,40 @@ const jokeType = ref(false);
 const store = useMainStore();
 const flippedCards = ref([]);
 const loading = computed(() => store.loading);
-const jokes = computed(() => store.jokes);
+const jokes = computed(() => store.jokes || []);
 
-onMounted(() => {
-  store.fetchJokes();
+onMounted(async () => {
+  let resp = await store.fetchJokes();
+  if (!resp.ok) {
+    snackbarMessage.value = 'Oops! Looks like we can\'t fetch your jokes right now. Please try again later!'
+    snackbar.value = true
+  }
 });
 
 const toggleFlip = (index) => {
   flippedCards.value[index] = !flippedCards.value[index];
 };
+
+async function fetchOtherJokes() {
+  flippedCards.value = []
+  let resp = await store.fetchJokes(jokeType.value ? 'programming' : '')
+  if (!resp.ok) {
+    snackbarMessage.value = 'Oops! Looks like we can\'t fetch your jokes right now. Please try again later!'
+    snackbar.value = true
+  }
+}
+
+function toggleFavorite(jokeId) {
+  if (isFavorite(jokeId)) {
+    store.removeFavorite(jokeId);
+  } else {
+    store.addFavorite(jokeId);
+  }
+}
+
+function isFavorite(jokeId) {
+  return store.favoriteJokes.includes(jokeId);
+}
 
 </script>
 <style scoped>
