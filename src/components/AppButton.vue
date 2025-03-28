@@ -7,10 +7,11 @@
     :color="color"
     :variant="variant"
     :density="density"
+    :ripple="label !== '' ? {} : false"
     @click.stop.prevent="btnClick"
   >
     <slot>
-      <v-icon v-if="hasIcon" size="x-large">{{ icon }}</v-icon>
+      <v-icon v-if="hasIcon" size="xx-large">{{ icon }}</v-icon>
       <span>
         {{ label }}
       </span>
