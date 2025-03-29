@@ -3,9 +3,9 @@ const Theme= {
     dark: false,
     colors: {
       primary: '#1b185d',       // Dark Blue
-      primary200: '#6C5B9B',    // Light Blue (updated)
+      primary200: '#6C5B9B',    // Light Blue
       secondary: '#4d3b97',     // Purple
-      secondary200: '#8E6F9A',  // Light Purple (updated)
+      secondary200: '#8E6F9A',  // Light Purple
       info: '#3abec1',          // Light blue
       success: '#5cb85c',       // Green
       accent: '#f39c12',        // Orange
