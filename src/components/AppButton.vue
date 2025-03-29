@@ -11,7 +11,7 @@
     @click.stop.prevent="btnClick"
   >
     <slot>
-      <v-icon v-if="hasIcon" size="xx-large">{{ icon }}</v-icon>
+      <v-icon v-if="hasIcon" :size="iconSize">{{ icon }}</v-icon>
       <span>
         {{ label }}
       </span>
@@ -30,7 +30,8 @@ const props = defineProps({
   disabled: { type: Boolean, default: false },
   density: { type: String, default: 'default' },
   variant: { type: String, default: 'plain' },
-  icon: { type: String, default: '' }
+  icon: { type: String, default: '' },
+  iconSize: { type: String, default: 'xx-large' }
 });
 const emit = defineEmits(['click']);
 

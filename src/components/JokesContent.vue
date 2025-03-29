@@ -11,7 +11,13 @@
     </v-snackbar>
 
     <v-card-title class="text-h5 mb-4 d-flex flex-column flex-md-row align-md-center">
-        {{ homeCaller ? 'Joke List' : 'My Favority Jokes' }}
+        <div class="d-flex flex-column flex-md-row align-center">
+            {{ homeCaller ? 'Joke List' : 'My Favorite Jokes' }}
+
+            <v-chip v-if="!homeCaller" color="primary" variant="tonal" class="ml-2 text-white">
+                {{ sortedJokes.length }} Jokes Saved
+            </v-chip>
+        </div>
         <v-spacer />
         <v-text-field
             v-if="!homeCaller"
@@ -22,16 +28,19 @@
             hide-details
             class="mr-4"
         />
+        <v-spacer />
         <v-switch v-if="homeCaller" v-model="jokeType" color="primary" label="Programming" hide-details />
         <v-divider v-if="homeCaller" vertical class="ma-4" />
         <app-button color="primary" :disabled="loading" :label="homeCaller ? 'Find other jokes' : 'Refresh'" variant="outlined"
             @click="fetchOtherJokes" />
+        <app-button variant="outlined" color="primary" :label="sortAscending ? 'A-Z' : 'Z-A'" 
+            :icon="sortAscending ? 'mdi-arrow-up' : 'mdi-arrow-down'" icon-size="large" @click="toggleSort" />
     </v-card-title>
 
     <v-progress-linear v-if="loading" indeterminate color="primary" class="mb-4"></v-progress-linear>
 
     <v-row>
-        <v-col v-if="filteredJokes.length !== 0" v-for="(joke, index) in filteredJokes" :key="joke.id" cols="12" md="6">
+        <v-col v-if="sortedJokes.length !== 0" v-for="(joke, index) in sortedJokes" :key="joke.id" cols="12" md="6">
             <v-card :color="flippedCards[index] ? 'secondary200' : 'primary200'" class="flip-card"
                 :class="{ flipped: flippedCards[index] }" @click="toggleFlip(index)">
                 <div class="flip-card-inner">
@@ -44,11 +53,11 @@
                     </div>
 
                     <app-button :icon="isFavorite(joke.id) ? 'mdi-star' : 'mdi-star-outline'"
-                        :color="isFavorite(joke.id) ? 'yellow' : 'grey'" @click="toggleFavorite(joke.id)" />
+                        :color="isFavorite(joke.id) ? 'yellow' : 'grey'" @click.stop="toggleFavorite(joke.id)" />
                 </div>
             </v-card>
         </v-col>
-        <v-col v-else-if="filteredJokes.length === 0 && !loading">
+        <v-col v-else-if="sortedJokes.length === 0 && !loading">
             <v-card-text class="text-h4 text-center">
                 Oops! No jokes to display
             </v-card-text>
@@ -70,17 +79,26 @@ const snackbarMessage = ref('');
 const jokeType = ref(false);
 const flippedCards = ref([]);
 const search = ref("");
+const sortAscending = ref(true);
 
 const loading = computed(() => store.loading);
 const jokes = computed(() => store.jokes || []);
 const homeCaller = computed(() => {
     return route.name === 'Home'
 })
-const filteredJokes = computed(() => {
-    return jokes.value.filter(joke =>
+const sortedJokes = computed(() => {
+    let filteredJokes = jokes.value.filter(joke =>
         joke.setup.toLowerCase().includes(search.value.toLowerCase()) ||
         joke.punchline.toLowerCase().includes(search.value.toLowerCase())
     );
+
+    return filteredJokes.sort((a, b) => {
+        if (sortAscending.value) {
+            return a.setup.localeCompare(b.setup);
+        } else {
+            return b.setup.localeCompare(a.setup);
+        }
+    });
 });
 
 onMounted(async () => {
@@ -125,6 +143,10 @@ function toggleFavorite(jokeId) {
 
 function isFavorite(jokeId) {
     return store.favoriteJokes.includes(jokeId);
+}
+
+function toggleSort() {
+    sortAscending.value = !sortAscending.value;
 }
 </script>
 
