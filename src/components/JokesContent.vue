@@ -10,9 +10,18 @@
         </p>
     </v-snackbar>
 
-    <v-card-title class="text-h5 mb-4 d-flex align-center">
+    <v-card-title class="text-h5 mb-4 d-flex flex-column flex-md-row align-md-center">
         {{ homeCaller ? 'Joke List' : 'My Favority Jokes' }}
         <v-spacer />
+        <v-text-field
+            v-if="!homeCaller"
+            v-model="search"
+            label="Search jokes..."
+            prepend-inner-icon="mdi-magnify"
+            variant="outlined"
+            hide-details
+            class="mr-4"
+        />
         <v-switch v-if="homeCaller" v-model="jokeType" color="primary" label="Programming" hide-details />
         <v-divider v-if="homeCaller" vertical class="ma-4" />
         <app-button color="primary" :disabled="loading" :label="homeCaller ? 'Find other jokes' : 'Refresh'" variant="outlined"
@@ -22,7 +31,7 @@
     <v-progress-linear v-if="loading" indeterminate color="primary" class="mb-4"></v-progress-linear>
 
     <v-row>
-        <v-col v-if="jokes.length !== 0" v-for="(joke, index) in jokes" :key="joke.id" cols="12" md="6">
+        <v-col v-if="filteredJokes.length !== 0" v-for="(joke, index) in filteredJokes" :key="joke.id" cols="12" md="6">
             <v-card :color="flippedCards[index] ? 'secondary200' : 'primary200'" class="flip-card"
                 :class="{ flipped: flippedCards[index] }" @click="toggleFlip(index)">
                 <div class="flip-card-inner">
@@ -39,7 +48,7 @@
                 </div>
             </v-card>
         </v-col>
-        <v-col v-else-if="jokes.length === 0 && !loading">
+        <v-col v-else-if="filteredJokes.length === 0 && !loading">
             <v-card-text class="text-h4 text-center">
                 Oops! No jokes to display
             </v-card-text>
@@ -60,54 +69,62 @@ const snackbar = ref(false);
 const snackbarMessage = ref('');
 const jokeType = ref(false);
 const flippedCards = ref([]);
+const search = ref("");
 
 const loading = computed(() => store.loading);
 const jokes = computed(() => store.jokes || []);
 const homeCaller = computed(() => {
     return route.name === 'Home'
 })
+const filteredJokes = computed(() => {
+    return jokes.value.filter(joke =>
+        joke.setup.toLowerCase().includes(search.value.toLowerCase()) ||
+        joke.punchline.toLowerCase().includes(search.value.toLowerCase())
+    );
+});
 
 onMounted(async () => {
-  let resp;
-  if (homeCaller.value) {
-    resp = await store.fetchJokes();
-  } else {
-    resp = await store.fetchJokesByIds();
-  }
-  if (!resp.ok) {
-    snackbarMessage.value = 'Oops! Looks like we can\'t fetch your jokes right now. Please try again later!'
-    snackbar.value = true
-  }
+    let resp;
+    if (homeCaller.value) {
+        resp = await store.fetchJokes();
+    } else {
+        resp = await store.fetchJokesByIds();
+    }
+    if (!resp.ok) {
+        snackbarMessage.value = 'Oops! Looks like we can\'t fetch your jokes right now. Please try again later!'
+        snackbar.value = true
+    } 
 });
 
 const toggleFlip = (index) => {
-  flippedCards.value[index] = !flippedCards.value[index];
+    flippedCards.value[index] = !flippedCards.value[index];
 };
 
 async function fetchOtherJokes() {
-  flippedCards.value = []
-  let resp;
-  if (homeCaller.value) {
-    resp = await store.fetchJokes(jokeType.value ? 'programming' : '')
-  } else {
-    resp = await store.fetchJokesByIds();
-  }
-  if (!resp.ok) {
-    snackbarMessage.value = 'Oops! Looks like we can\'t fetch your jokes right now. Please try again later!'
-    snackbar.value = true
-  }
+    flippedCards.value = []
+    search.value = ''
+    let resp;
+    if (homeCaller.value) {
+        resp = await store.fetchJokes(jokeType.value ? 'programming' : '')
+    } else {
+        resp = await store.fetchJokesByIds();
+    }
+    if (!resp.ok) {
+        snackbarMessage.value = 'Oops! Looks like we can\'t fetch your jokes right now. Please try again later!'
+        snackbar.value = true
+    }
 }
 
 function toggleFavorite(jokeId) {
-  if (isFavorite(jokeId)) {
-    store.removeFavorite(jokeId);
-  } else {
-    store.addFavorite(jokeId);
-  }
+    if (isFavorite(jokeId)) {
+        store.removeFavorite(jokeId);
+    } else {
+        store.addFavorite(jokeId);
+    }
 }
 
 function isFavorite(jokeId) {
-  return store.favoriteJokes.includes(jokeId);
+    return store.favoriteJokes.includes(jokeId);
 }
 </script>
 
