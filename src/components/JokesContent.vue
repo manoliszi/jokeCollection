@@ -29,7 +29,7 @@
             class="mr-4"
         />
         <v-spacer />
-        <v-switch v-if="homeCaller" v-model="jokeType" color="primary" label="Programming" hide-details />
+        <v-switch v-if="homeCaller" v-model="jokeType" color="primary" label="Programming Jokes" hide-details />
         <v-divider v-if="homeCaller" vertical class="ma-4" />
         <app-button color="primary" :disabled="loading" :label="homeCaller ? 'Find other jokes' : 'Refresh'" variant="outlined"
             @click="fetchOtherJokes" />
