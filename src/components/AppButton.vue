@@ -20,24 +20,24 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+  import { computed } from 'vue';
 
-const props = defineProps({
-  id: { type: String, default: 'button' },
-  label: { type: String, default: '' },
-  color: { type: String, default: '' },
-  loading: { type: Boolean, default: false },
-  disabled: { type: Boolean, default: false },
-  density: { type: String, default: 'default' },
-  variant: { type: String, default: 'plain' },
-  icon: { type: String, default: '' },
-  iconSize: { type: String, default: 'xx-large' }
-});
-const emit = defineEmits(['click']);
+  const props = defineProps({
+    id: { type: String, default: 'button' },
+    label: { type: String, default: '' },
+    color: { type: String, default: '' },
+    loading: { type: Boolean, default: false },
+    disabled: { type: Boolean, default: false },
+    density: { type: String, default: 'default' },
+    variant: { type: String, default: 'plain' },
+    icon: { type: String, default: '' },
+    iconSize: { type: String, default: 'xx-large' }
+  });
+  const emit = defineEmits(['click']);
 
-const hasIcon = computed(() => {return props.icon !== ''})
+  const hasIcon = computed(() => {return props.icon !== ''})
 
-function btnClick(e) {
-  emit('click', e);
-}
+  function btnClick(e) {
+    emit('click', e);
+  }
 </script>

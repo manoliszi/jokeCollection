@@ -5,6 +5,5 @@
 </template>
 
 <script setup>
-import JokesContent from "@/components/JokesContent.vue"
-
+  import JokesContent from "@/components/JokesContent.vue"
 </script>

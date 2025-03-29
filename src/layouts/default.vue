@@ -7,5 +7,5 @@
 </template>
 
 <script setup>
-import AppSideMenu from '@/components/AppSideMenu.vue';
+  import AppSideMenu from '@/components/AppSideMenu.vue';
 </script>
