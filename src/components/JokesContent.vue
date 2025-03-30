@@ -26,7 +26,6 @@
       prepend-inner-icon="mdi-magnify"
       variant="outlined"
       hide-details
-      class="mr-4"
     />
     <v-spacer />
     <v-switch v-if="homeCaller" v-model="jokeType" color="primary" label="Programming Jokes" hide-details />
